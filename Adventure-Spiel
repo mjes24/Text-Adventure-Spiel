@@ -1,0 +1,216 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// ========================
+// 🚀 Player Class
+// ========================
+class Player {
+public:
+    int health;
+    bool hasKey;
+    bool foundHint;
+
+    // Constructor to initialize player properties
+    Player() {
+        health = 3;
+        hasKey = false;
+        foundHint = false;
+    }
+
+    // Display player health
+    void showHealth() {
+        cout << "\n[Player Health]: " << health << " ❤️\n";
+    }
+};
+
+// ========================
+// 🚀 Room Class
+// ========================
+class Room {
+public:
+    string name;
+    string description;
+
+    // Constructor to initialize a room
+    Room(string n, string d) {
+        name = n;
+        description = d;
+    }
+
+    // Display room info
+    void enter() {
+        cout << "\n[" << name << "]\n";
+        cout << description << endl;
+    }
+};
+
+// ========================
+// 🚀 Game Class (Handles Game Flow)
+// ========================
+class Game {
+private:
+    Player player;  // Player object
+    Room room1, room2, room3; // Room objects
+
+public:
+    // Constructor: Initializes rooms with names & descriptions
+    Game()
+        : room1("Room 1", "You are in a dimly lit room with two doors."),
+          room2("Room 2", "You enter a small room with an old wooden table. A rusty key lies on top."),
+          room3("Room 3", "You enter a room with a heavy locked door.") {}
+
+    // Start the game
+    void startGame() {
+        cout << "==============================\n";
+        cout << "  Welcome to the Adventure Game!\n";
+        cout << "==============================\n";
+        player.showHealth();
+        enterRoom(1);
+    }
+
+    // Handle room navigation
+    void enterRoom(int roomNumber) {
+        if (roomNumber == 1) {
+            room1.enter();
+            room1Options();
+        } else if (roomNumber == 2) {
+            room2.enter();
+            room2Options();
+        } else if (roomNumber == 3) {
+            room3.enter();
+            room3Options();
+        }
+    }
+
+    // Room 1 Options
+    void room1Options() {
+        int choice;
+        cout << "1. Enter Room 2\n";
+        cout << "2. Enter Room 3\n";
+        cout << "3. Quit Game\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) enterRoom(2);
+        else if (choice == 2) enterRoom(3);
+        else if (choice == 3) {
+            cout << "Thanks for playing!\n";
+            exit(0);
+        } else {
+            cout << "Invalid choice. Try again.\n";
+            room1Options();
+        }
+    }
+
+    // Room 2 Options
+    void room2Options() {
+        int choice;
+        cout << "1. Take the key\n";
+        cout << "2. Check the table for a hint\n";
+        cout << "3. Go back to Room 1\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            if (!player.hasKey) {
+                puzzle();
+                player.hasKey = true;
+            } else {
+                cout << "You already have the key.\n";
+            }
+            room2Options();
+        } else if (choice == 2) {
+            if (!player.foundHint) {
+                cout << "You found a note! The code is 123.\n";
+                player.foundHint = true;
+            } else {
+                cout << "The note is still here. The code is 123.\n";
+            }
+            room2Options();
+        } else if (choice == 3) {
+            enterRoom(1);
+        } else {
+            cout << "Invalid choice. Try again.\n";
+            room2Options();
+        }
+    }
+
+    // Room 3 Options
+    void room3Options() {
+        int choice;
+        cout << "1. Try to open the door\n";
+        cout << "2. Go back to Room 1\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            if (player.hasKey) {
+                enterCode();
+            } else {
+                cout << "You need a key to open this door.\n";
+                player.health--;
+                player.showHealth();
+                if (player.health <= 0) {
+                    cout << "You have no health left! Game Over!\n";
+                    exit(0);
+                }
+                room3Options();
+            }
+        } else if (choice == 2) {
+            enterRoom(1);
+        } else {
+            cout << "Invalid choice. Try again.\n";
+            room3Options();
+        }
+    }
+
+    // Puzzle Challenge
+    void puzzle() {
+        string answer;
+        cout << "\n[Puzzle Challenge]\n";
+        cout << "What is 2 + 2?\n";
+        cout << "Enter your answer: ";
+        cin >> answer;
+
+        if (answer == "4") {
+            cout << "Correct! You may take the key.\n";
+        } else {
+            player.health--;
+            cout << "Wrong answer! You lost 1 health.\n";
+            player.showHealth();
+
+            if (player.health <= 0) {
+                cout << "You have no health left! Game Over!\n";
+                exit(0);
+            }
+            puzzle();
+        }
+    }
+
+    // Enter Code to Unlock the Door
+    void enterCode() {
+        int code;
+        cout << "Enter the 3-digit code: ";
+        cin >> code;
+
+        if (code == 123) {
+            cout << "The door unlocks! You escape!\n";
+            exit(0);
+        } else {
+            cout << "Wrong code! Try again.\n";
+            enterCode();
+        }
+    }
+};
+
+// ========================
+// 🚀 Main Function
+// ========================
+int main() {
+    Game game;  // Create game object
+    game.startGame();  // Start the game
+    return 0;
+}
+
